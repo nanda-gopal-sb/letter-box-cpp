@@ -1,18 +1,16 @@
+#include <string.h>
 #include <iostream>
 #include <fstream>
-#include <string.h>
 #include <random>
-#include <chrono>
-#include <thread>
 using namespace std;
 random_device rd;
 mt19937 gen(rd());
-struct Letters
+struct Letters // Linked list for letters
 {
     char letter = '\0';
     Letters *next = nullptr;
 };
-struct Words
+struct Words // Linked list for words
 {
     char *word = nullptr;
     Words *next = nullptr;
@@ -23,12 +21,12 @@ class Functions
 public:
     int random()
     {
-        uniform_int_distribution<> dist(97, 112);
+        uniform_int_distribution<> dist(97, 112); // generates an lowercase letter
         return dist(gen);
     }
     char *removeDuplicates(char *input)
     {
-        bool seen[20] = {false};
+        bool seen[256] = {false};
         int len = strlen(input);
         char *result = new char[len + 1];
         int index = 0;
@@ -51,7 +49,7 @@ public:
         int len = strlen(wordToCheck);
         for (int i = 0; i < len; i++)
             tolower(wordToCheck[i]);
-        ifstream words("./words.txt");
+        ifstream words("words.txt");
         if (words)
         {
             while (getline(words, line))
@@ -68,6 +66,21 @@ public:
         }
         return false;
     }
+    bool filePresent()
+    {
+        ifstream words("words.txt");
+        if (words)
+        {
+            words.close();
+            return true;
+        }
+        else
+        {
+            cout << "File <words.txt> does not exsist" << "\n";
+            words.close();
+            return false;
+        }
+    }
     void welcomeMessage()
     {
         cout << "Welcome to another game by yours truly" << "\n";
@@ -78,7 +91,7 @@ public:
     void printOptions()
     {
         cout << "1 - Add a letter" << "\n";
-        cout << "2 - Delete a pair" << "\n";
+        cout << "2 - Delete a letter" << "\n";
         cout << "3 - Submit word" << "\n";
         cout << "4 - Quit the game" << "\n";
     }
@@ -86,18 +99,21 @@ public:
 class LinkedListWords
 {
 private:
+    // initializing the start node as nullptr
     Words *words = nullptr;
 
 public:
     void AddWord(Words *newNode, char *toAdd)
     {
         newNode->word = new char[20];
-        strcpy(newNode->word, toAdd);
+        strcpy(newNode->word, toAdd); // copying the word to the node
+        // if the list is empty
         if (words == nullptr)
         {
             words = newNode;
             return;
         }
+        // if the list is not empty
         Words *temp = words;
         while (temp->next != nullptr)
         {
@@ -112,6 +128,7 @@ public:
             cout << "No words entered" << "\n";
             return;
         }
+        // if there is only one word
         if (words->next == nullptr)
         {
             cout << words->word << "\n";
@@ -123,8 +140,9 @@ public:
             cout << temp->word << ".";
             temp = temp->next;
         }
-        cout << temp->word << "\n";
+        cout << temp->word << "\n"; // printing the last word
     }
+    // function to the sum of all the words in LinkedList
     char *getCurrentString()
     {
         int totalLength = 0;
@@ -191,12 +209,12 @@ public:
         }
         return temp->letter;
     }
-    void AddNode(Letters *node, char toAdd)
+    void AddNode(Letters *newNode, char toAdd)
     {
-        node->letter = toAdd;
+        newNode->letter = toAdd;
         if (letters == nullptr)
         {
-            letters = node;
+            letters = newNode;
             return;
         }
         Letters *temp = letters;
@@ -204,8 +222,9 @@ public:
         {
             temp = temp->next;
         }
-        temp->next = node;
+        temp->next = newNode;
     }
+    // function to get the sum of all letters
     char *getword()
     {
         char *words = new char[20];
@@ -239,19 +258,19 @@ public:
         }
         cout << temp->letter << endl;
     }
-    void DeleteNode()
+    void deleteLetter()
     {
         if (letters == nullptr)
         {
             cout << "No letters entered to delete" << "\n";
-            this_thread::sleep_for(chrono::seconds(1));
+            system("pause");
             return;
         }
         Letters *temp = letters;
         if (isContinued && temp->next == nullptr)
         {
             cout << "You must start the next word starting with the last letter of the previous word" << "\n";
-            this_thread::sleep_for(chrono::seconds(2));
+            system("pause");
             return;
         }
         if (temp->next == nullptr)
@@ -292,6 +311,7 @@ private:
     Functions func;
 
 public:
+    // constructor to initialize the matrix with random letters
     Matrix()
     {
         for (int i = 0; i < 5; i++)
@@ -314,7 +334,6 @@ public:
             }
         }
     }
-
     bool checkForWin(char *currentString)
     {
         if (strlen(currentString) == 12)
@@ -334,6 +353,7 @@ public:
             cout << "\n";
         }
     }
+    // does a linear search to check if the letter is present in the matrix
     bool checkForLetter(char toCheck)
     {
         int *indices = new int[2];
@@ -358,7 +378,7 @@ public:
     }
     int *getIndices(char toCheck)
     {
-        int *indices = new int[2];
+        int *indices = new int[2]; // to store the indices of the letter
         for (int i = 0; i < 5; i++)
         {
             for (int j = 0; j < 5; j++)
@@ -386,53 +406,70 @@ public:
     {
         int *startIndices = getIndices(startLetter);
         int *endIndices = getIndices(endLetter);
+        // if the letters are on the same row or column and are on the border
         if ((startIndices[1] == 0 && endIndices[1] == 4) || (startIndices[1] == 4 && endIndices[1] == 0) ||
             (startIndices[0] == 0 && endIndices[0] == 4) || (startIndices[0] == 4 && endIndices[0] == 0))
         {
+            delete startIndices;
+            delete endIndices;
             return true;
         }
+        // if the letters are on the same row or column
         else if (startIndices[0] == endIndices[0] || startIndices[1] == endIndices[1] ||
                  startIndices[1] == -1 || endIndices[1] == -1 || startIndices[0] == -1)
         {
+            delete startIndices;
+            delete endIndices;
             return false;
         }
+        // if the letters are not on the same row or column
         else
         {
+            delete startIndices;
+            delete endIndices;
             return true;
         }
     }
 };
 int main()
 {
-    bool gameOver = false;
+    Functions *func = new Functions;
+    if (!func->filePresent()) // checking if the file is present
+    {
+        cout << "The file <Words.txt> not present please check again" << "\n";
+        delete func;
+        return 1;
+    }
+    // creating the objects
     Matrix *mat = new Matrix;
     LinkedListLetters *listLetters = new LinkedListLetters;
     LinkedListWords *listWords = new LinkedListWords;
-    Functions *func = new Functions;
+    // creating the pointers
     Letters *newLetter = nullptr;
     Words *newWord = nullptr;
+    // initializing the variables
+    bool gameOver = false;
+    bool startOfGame = true;
     char choice = '\0';
     char startLetter, endLetter;
-    int i = -1;
-    char *currentWord = new char[20];
+    char *currentWord = new char[100];
     func->welcomeMessage();
-    while (choice != '4')
+    while (!gameOver)
     {
-        if (i > -1)
+        if (!startOfGame) // cls must only work after the first iteration
         {
             system("cls");
         }
-        i++;
-        mat->display();
+        if (startOfGame)
+        {
+            startOfGame = false;
+        }
         func->printOptions();
+        mat->display();
         cout << "Your current word - " << " ";
         listLetters->Display();
         cout << "The words you have entered is " << " ";
         listWords->DisplayWord();
-        if (gameOver)
-        {
-            break;
-        }
         choice = getchar();
         if (choice == '1')
         {
@@ -443,6 +480,7 @@ int main()
                 if (!mat->checkForLetter(startLetter))
                 {
                     cout << "The letter is not in the puzzle" << "\n";
+                    system("pause");
                     continue;
                 }
                 newLetter = new Letters;
@@ -461,6 +499,7 @@ int main()
                 else
                 {
                     cout << "Invalid move " << "\n";
+                    system("pause");
                     continue;
                 }
             }
@@ -470,18 +509,19 @@ int main()
             if (listLetters->isEmpty())
             {
                 cout << "No pair to delete" << "\n";
+                system("pause");
                 continue;
             }
             else
             {
-                listLetters->DeleteNode();
+                listLetters->deleteLetter();
                 continue;
             }
         }
         else if (choice == '3')
         {
             strcpy(currentWord, listLetters->getword());
-            if (func->presentInDict(currentWord)) //
+            if (func->presentInDict(currentWord))
             {
                 cout << "Entered word is correct" << "\n";
                 newWord = new Words;
@@ -494,24 +534,25 @@ int main()
                 currentWord = func->removeDuplicates(currentWord);
                 if (mat->checkForWin(currentWord))
                 {
-                    gameOver = true;
                     cout << "You have won the game" << "\n";
                     cout << "YAYYY" << endl;
-                    continue;
+                    gameOver = true;
+                    break;
                 }
-                this_thread::sleep_for(chrono::seconds(2));
+                system("pause");
                 continue;
             }
             else
             {
                 cout << "Entered word is incorrect" << "\n";
-                this_thread::sleep_for(chrono::seconds(2));
+                system("pause");
                 continue;
             }
         }
         else if (choice == '4')
         {
             cout << "Quitting the game" << "\n";
+            gameOver = true;
             break;
         }
     }
