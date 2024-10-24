@@ -2,9 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <random>
-using namespace std;
-random_device rd;
-mt19937 gen(rd());
+std::random_device rd;
+std::mt19937 gen(rd());
 struct Letters // Linked list for letters
 {
     char letter = '\0';
@@ -21,7 +20,7 @@ class Functions
 public:
     int random()
     {
-        uniform_int_distribution<> dist(97, 112); // generates an lowercase letter
+        std::uniform_int_distribution<> dist(97, 112); // generates an lowercase letter
         return dist(gen);
     }
     char *removeDuplicates(char *input)
@@ -44,12 +43,12 @@ public:
     }
     bool presentInDict(char *wordToCheck)
     {
-        string line;
+        std::string line;
         int flen = 0;
         int len = strlen(wordToCheck);
         for (int i = 0; i < len; i++)
             tolower(wordToCheck[i]);
-        ifstream words("words.txt");
+        std::ifstream words("words.txt");
         if (words)
         {
             while (getline(words, line))
@@ -68,7 +67,7 @@ public:
     }
     bool filePresent()
     {
-        ifstream words("words.txt");
+        std::ifstream words("words.txt");
         if (words)
         {
             words.close();
@@ -76,24 +75,24 @@ public:
         }
         else
         {
-            cout << "File <words.txt> does not exsist" << "\n";
+            std::cout << "File <words.txt> does not exsist" << "\n";
             words.close();
             return false;
         }
     }
     void welcomeMessage()
     {
-        cout << "Welcome to another game by yours truly" << "\n";
-        cout << "But theres a catch! You can only match with letters that are not adjacent to each other" << "\n";
-        cout << "The objective of the game is to use all the letters to form multiple words\n";
-        cout << "Let the games begin" << "\n";
+        std::cout << "Welcome to another game by yours truly" << "\n";
+        std::cout << "But theres a catch! You can only match with letters that are not adjacent to each other" << "\n";
+        std::cout << "The objective of the game is to use all the letters to form multiple words\n";
+        std::cout << "Let the games begin" << "\n";
     }
     void printOptions()
     {
-        cout << "1 - Add a letter" << "\n";
-        cout << "2 - Delete a letter" << "\n";
-        cout << "3 - Submit word" << "\n";
-        cout << "4 - Quit the game" << "\n";
+        std::cout << "1 - Add a letter" << "\n";
+        std::cout << "2 - Delete a letter" << "\n";
+        std::cout << "3 - Submit word" << "\n";
+        std::cout << "4 - Quit the game" << "\n";
     }
 };
 class LinkedListWords
@@ -125,22 +124,22 @@ public:
     {
         if (words == nullptr)
         {
-            cout << "No words entered" << "\n";
+            std::cout << "No words entered" << "\n";
             return;
         }
         // if there is only one word
         if (words->next == nullptr)
         {
-            cout << words->word << "\n";
+            std::cout << words->word << "\n";
             return;
         }
         Words *temp = words;
         while (temp->next != nullptr)
         {
-            cout << temp->word << ".";
+            std::cout << temp->word << ".";
             temp = temp->next;
         }
-        cout << temp->word << "\n"; // printing the last word
+        std::cout << temp->word << "\n"; // printing the last word
     }
     // function to the sum of all the words in LinkedList
     char *getCurrentString()
@@ -247,30 +246,30 @@ public:
     {
         if (letters == nullptr)
         {
-            cout << "No letters entered" << "\n";
+            std::cout << "No letters entered" << "\n";
             return;
         }
         Letters *temp = letters;
         while (temp->next != nullptr)
         {
-            cout << temp->letter;
+            std::cout << temp->letter;
             temp = temp->next;
         }
-        cout << temp->letter << endl;
+        std::cout << temp->letter << std::endl;
     }
     void deleteLetter()
     {
         if (letters == nullptr)
         {
-            cout << "No letters entered to delete" << "\n";
-            system("pause");
+            std::cout << "No letters entered to delete" << "\n";
+            system("read");
             return;
         }
         Letters *temp = letters;
         if (isContinued && temp->next == nullptr)
         {
-            cout << "You must start the next word starting with the last letter of the previous word" << "\n";
-            system("pause");
+            std::cout << "You must start the next word starting with the last letter of the previous word" << "\n";
+            system("read");
             return;
         }
         if (temp->next == nullptr)
@@ -348,9 +347,9 @@ public:
         {
             for (int j = 0; j < 5; j++)
             {
-                cout << arr[i][j] << "\t";
+                std::cout << arr[i][j] << "\t";
             }
-            cout << "\n";
+            std::cout << "\n";
         }
     }
     // does a linear search to check if the letter is present in the matrix
@@ -436,7 +435,7 @@ int main()
     Functions *func = new Functions;
     if (!func->filePresent()) // checking if the file is present
     {
-        cout << "The file <Words.txt> not present please check again" << "\n";
+        std::cout << "The file <Words.txt> not present please check again" << "\n";
         delete func;
         return 1;
     }
@@ -456,9 +455,9 @@ int main()
     func->welcomeMessage();
     while (!gameOver)
     {
-        if (!startOfGame) // cls must only work after the first iteration
+        if (!startOfGame) // clear must only work after the first iteration
         {
-            system("cls");
+            system("clear");
         }
         if (startOfGame)
         {
@@ -466,21 +465,21 @@ int main()
         }
         func->printOptions();
         mat->display();
-        cout << "Your current word - " << " ";
+        std::cout << "Your current word - " << " ";
         listLetters->Display();
-        cout << "The words you have entered is " << " ";
+        std::cout << "The words you have entered is " << " ";
         listWords->DisplayWord();
         choice = getchar();
         if (choice == '1')
         {
-            cout << "Enter the letter you want to enter" << "\n";
-            cin >> startLetter;
+            std::cout << "Enter the letter you want to enter" << "\n";
+            std::cin >> startLetter;
             if (listLetters->isEmpty())
             {
                 if (!mat->checkForLetter(startLetter))
                 {
-                    cout << "The letter is not in the puzzle" << "\n";
-                    system("pause");
+                    std::cout << "The letter is not in the puzzle" << "\n";
+                    system("read");
                     continue;
                 }
                 newLetter = new Letters;
@@ -498,8 +497,8 @@ int main()
                 }
                 else
                 {
-                    cout << "Invalid move " << "\n";
-                    system("pause");
+                    std::cout << "Invalid move " << "\n";
+                    system("read");
                     continue;
                 }
             }
@@ -508,8 +507,8 @@ int main()
         {
             if (listLetters->isEmpty())
             {
-                cout << "No pair to delete" << "\n";
-                system("pause");
+                std::cout << "No pair to delete" << "\n";
+                system("read");
                 continue;
             }
             else
@@ -523,7 +522,7 @@ int main()
             strcpy(currentWord, listLetters->getword());
             if (func->presentInDict(currentWord))
             {
-                cout << "Entered word is correct" << "\n";
+                std::cout << "Entered word is correct" << "\n";
                 newWord = new Words;
                 listWords->AddWord(newWord, currentWord);
                 listLetters->deleteLinkedList();
@@ -534,33 +533,37 @@ int main()
                 currentWord = func->removeDuplicates(currentWord);
                 if (mat->checkForWin(currentWord))
                 {
-                    cout << "You have won the game" << "\n";
-                    cout << "YAYYY" << endl;
+                    std::cout << "You have won the game" << "\n";
+                    std::cout << "YAYYY" << std::endl;
                     gameOver = true;
                     break;
                 }
-                system("pause");
+                system("read");
                 continue;
             }
             else
             {
-                cout << "Entered word is incorrect" << "\n";
-                system("pause");
+                std::cout << "Entered word is incorrect" << "\n";
+                system("read");
                 continue;
             }
         }
         else if (choice == '4')
         {
-            cout << "Quitting the game" << "\n";
+            std::cout << "Quitting the game" << "\n";
             gameOver = true;
             break;
         }
+        else
+        {
+            std::cout << "Your option is wrong try again" << "\n";
+        }
     }
-    delete mat;
-    delete listLetters;
-    delete listWords;
-    delete func;
-    delete currentWord;
-    delete newLetter;
-    delete newWord;
+    free(mat);
+    free(listLetters);
+    free(listWords);
+    free(func);
+    free(currentWord);
+    free(newLetter);
+    free(newWord);
 }
